@@ -21,6 +21,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 // Middleware
+app.set('trust proxy', 1);
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,6 +33,7 @@ const globalLimiter = rateLimit({
   max: 100, // limit each IP to 100 requests per windowMs
   message: 'Too many requests, please try again later.',
   headers: true, // Sends the rate limit info in the response headers
+  // validate: false,
 });
 
 app.use(globalLimiter);
@@ -52,7 +54,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/users', userRoutes);
 
 // Use login routes
-app.use('/', loginRoutes);
+// app.use('/', loginRoutes);
 
 // Use metrics routes
 app.use('/metrics', metricsRoutes);
@@ -105,6 +107,10 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+app.get('/', (req, res) => {
+  res.redirect('/api-docs')
+});
 
 // Conditionally start the server only if this file is the entry point
 if (require.main === module) {

@@ -26,6 +26,7 @@ const getUserById = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
+  // const { error, value } = userSchema.validate(req.body, {xForwardedForHeader: false});
   const { error, value } = userSchema.validate(req.body);
   if (error) {
     return res.status(400).json({ error: error.details[0].message });
